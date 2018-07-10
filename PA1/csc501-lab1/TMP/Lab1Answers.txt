@@ -1,0 +1,53 @@
+1.What are the advantages and disadvantages of each of the two scheduling policies? Also, give the advantages and disadvantages of the round robin scheduling policy originally implemented in Xinu.
+
+Answer : 
+
+Random Scheduler
+
+Advantages-
+a) The number of times each process is executed is in proportion to its priority. In other words, each process gets a proportional share of the CPU time. 
+b)  It is lightweight and fast since the time to generate a random number and make a decision to schedule the next process is less.
+
+Disadvantages-
+a) The scheduling of processes itself is dependent on chance so it is hard to say which process will execute and when. 
+b) It will not give the exact proportion of CPU time to each process and expected proportions are reached only when the processes run for a long time. 
+
+Linux Scheduler
+
+Advantages-
+a) Since all processes can execute in a given epoch, the low priority processes will no longer "starve" waiting for high priority processes to finish execution. 
+b) If a process does not use up its given quantum, then it gets to run for a longer time in the next epoch. 
+
+Disadvantages-
+a) As the processes in the system increase and reach NPROC, the highest priority process must wait for all the other processes to finish execution before it can execute since a lot of time is also wasted in context switching. 
+b) Newly created processes must wait until the epoch ends. This is especially disadvantageous when the newly created process is high priority. 
+
+XINU scheduler
+
+Advantages- 
+a) The higher priority process will always execute over lower priority process. Any newly created process will not have to wait for other process to finish.
+
+Disadvantages- 
+a) Starvation problem since highest priority process always executes over lower priority process.
+
+
+2.Assume that there are three processes P1, P2, P3 that will run forever without blocking. We want to allocate the following CPU times to each of them: 20% to P1, 30% to P2, and 50% to P3. Which priorities do we need to set to P1, P2, and P3 to accomplish this if we want to use the Random scheduler?  Assume that those processes are the only ones running in the machine. Could you give a generalization of your result to n processes? Explain.
+
+Answer :
+
+The priorities for P1, P2, P3 should be the same as the percentages allocated for the process.
+The priorities would be 20,30,50. 
+
+For N processes P1, P2,...PN with CPU times of t1%, t2%,...tn% such that t1+t2+...+tn = sum = 100, then the priorities must be t1, t2,..., tn. 
+
+In other words, the percent of CPU allocation is equal to the priority of the process.
+
+3. Describe the way each of the schedulers affects the NULL process.
+
+Answer :
+
+Random/Default Scheduler:
+The null process is not executed until all the other ready processes have finished executing.
+
+Linux Scheduler:
+The null process is executed when there are no other processes running and at the end of the last epoch.

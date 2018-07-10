@@ -1,0 +1,54 @@
+TASK 1
+
+1.1) 
+An alternative approach to priority inversion problem: Random Boosting.
+https://en.wikipedia.org/wiki/Random_boosting
+
+Random boosting is a strategy used by the scheduler in Microsoft Windows to avoid deadlock due to priority inversion. Ready threads holding locks are randomly boosted in priority and allowed to run long enough to exit the critical section. If the thread doesn't get enough time to release the lock, it will get another chance.
+
+1.2)
+The test case is in file test.c
+
+Consider a situation where there are three process A(prio 20), B(prio 30), C(prio 40). First A is created, acquires the lock and goes to sleep. Then B is created and it goes to sleep. Then C is created and it tries to acquire the lock. But it cannot do so until A releases the lock, so it is pushed into wait queue of that lock. Now the CPU chooses the highest priority process from the ready queue, which can be either A or B, the only ready processes in the ready queue ( since C is waiting for lock).
+
+
+In case 1: where the priority inheritance algorithm is used, since the priority of C is greater than A, it is inherited to A, whose priority now becomes 40. The process to be scheduled next is A since its priority is greater than B. 
+Expected output :
+C: requesting the lock
+A: acquiring/releasing ( acquiring since lock() call might not have completed in assigned QUANTUM) 
+
+In case 2: since the process with the highest priority is B (prio 30) > A (prio 20), B will be scheduled after C's failed lock request. 
+Expected output:
+C: requesting the lock
+B: should execute.
+
+Results:
+Test 1
+A: Requesting the lock, sleep 2s
+C: Requesting the lock, sleep 2s
+A: acquired the lock, sleep 2s
+B is running with midlevel priority
+A: to release lock
+C: acquired the lock, sleep 2s
+C: to release lock
+B done.
+Locks test completed 
+
+Using semaphores now 
+A: Requesting the lock, sleep 2s
+A: acquired the lock (semaphore), sleep 2s
+C: Requesting the lock, sleep 2s
+B is running with midlevel priority
+A: to release lock
+C: acquired the lock (semaphore), sleep 2s
+C: to release lock
+B done.
+
+All tests completed. 
+
+The generated output matches the expected output, so Priority inheritance algorithm can address the priority inversion problem. 
+
+TASK 2
+
+2) To show how thread interleaving can cause problems, consider the example where two reader threads t1 and t2 are concurrently executing. Both of them have called do_update and reached to the buffer_add() function. Let's say that t1 has entered the function and is updating the length of the buffer. Before it can finish, t2 starts executing and reaches the same point and updates the len variable of the buffer and returns. After this, t1 is given back control and is unaware of the changes made to the buffer len by t2. So it wrongly updates the buffer len variable which was modified by t2. This means that the len variable does not update correctly. It will lead to inconsistencies and cause corruption of the data buffer. 
+

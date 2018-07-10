@@ -1,0 +1,122 @@
+Additional Question Answers:
+
+Q1)
+
++----------------------------------+  
+|                                  | +----->  0x00ffeff8 -Base Pointer of process main
+|                                  |
++                                  +
+|         Main Process             |
+|            Stack                 | +------> 0x00ffefa0 -Stack pointer of process main
++                                  + 
+|                                  |
+|                                  | +------> 0x00ffdffc -Stack Limit  of process main
++----------------------------------+  
+|XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX|
+|X                                X|
+|X          Free Memory           X|
+|X                                X|
+|XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX|
++----------------------------------+
+|                                  |
+|          Heap  Segment           |
+|                                  |
++----------------------------------+  +-------> 0x0002c298 -end
+|                                  |
+|           BSS Segment            |
+|                                  |
++----------------------------------+  +------> 0x000226e8 -edata
+|                                  |
+|             Data Segment         |
+|                                  |
++----------------------------------+  +------> 0x0001d624 -etext
+|                                  |
+|                                  |
+|            Text Segment          |
+|                                  |
++----------------------------------+  +------> 0x00000000
+
+
+Q2)
+
+ 
++-----------------------------+
+|                             |
+|                             | +--------> 0x00ffefd0 -Before Function call
+|      Argument 1             |
+|                             |
++-----------------------------+ 
+|                             |
+|     Return Address          | +-----> Holds return address of caller
+|                             |
+|                             |
++-----------------------------+
+|                             |
+|                             |
+|       Saved EBP             | +-------> 0x00ffefc8 -After Function call
+|                             |
+|                             |
++-----------------------------+ 
+
+
+Q3)
+
+The byte order followed is Little Endian. 
+
+When an integer value of 1 is stored in the memory of a 32 bit system, it occupies 4 bytes. The memory layout for little endian would be like this
+
+                 +------------+---------------+--------------+-------------+
+                 |            |               |              |             |
+int a =1         |    01      |      00       |     00       |     00      |
+                 |            |               |              |             |
+                 +------------+---------------+--------------+-------------+
+                 |
+                 |
+                 v
+             char * p
+
+For Big Endian, the order would be reversed. So simply checking the value at first address of the integer number which would be either 1 (for little endian) or 0 (for big endian), the byte order can be found out. 
+The following code was inserted into /sys/main.c and run. 
+int a =1;
+char* p = (char*) a; 
+if(*p == 0) 
+	kprintf("Big Endian");
+else 
+	kprintf("Little Endian");
+The output was Little Endian, as expected. 
+
+
+Q4)
+
+MOV instruction:
+
+This instruction requires two operands. It is used to move data between immediate values, general purpose registers, segment registers, and memory.
+Example: mov %esp, %ebp to copy value from ESP register to EBP register. 
+
+PUSH Instruction:
+
+Push instruction requires only one operand. It is used to push an element into stack by decrementing the stack pointer and storing data in the new memory location. 
+Example: push ebx; 
+
+PUSHA Instruction:
+
+This instruction needs no operands.
+pusha instruction pushes all the general purpose registers onto the stack in the order EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI.
+Example: pusha
+
+POP Instruction:
+
+Pop loads the data pointed by the stack pointer into the operand and increments stack pointer by one memory address. 
+Example: pop ebx;
+
+
+POPA instruction:
+
+This instruction needs no operands.
+This instruction is used to pop all the data in the general purpose registers off the stack in the order EAX, ECX, EDX, EBX, ESP, EBP, ESI, EDI.
+Example: popa
+
+
+Q5)
+
+All the variables are not shown in the output of printtos() function. This is becase the -O0 flag is enabled by default while compilation which enables compiler optimization. 
